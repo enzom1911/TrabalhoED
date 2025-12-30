@@ -1,3 +1,5 @@
+// módulo da máquina principal onde vamos definir os diferentes estados do jogo e a transição entre eles
+
 module blackjack(
     input embaralhar_ok, clock, reset, hit, stay, cartaok,
     input [5:0] pts_jogador, pts_dealer,
