@@ -24,7 +24,9 @@ module pontuacao(clock,reset,carta,endereco,pjogador,pdealer,pts_jogador,pts_dea
 
 	always @(*) begin
 		if (carta >= 10) 
-			valor = 10;
+			valor = 10; // J, Q, K valem 10
+		else if (carta == 1)
+			valor = 1; // Ás começa valendo 1
 		else
 			valor = carta;
 	end
@@ -54,6 +56,9 @@ module pontuacao(clock,reset,carta,endereco,pjogador,pdealer,pts_jogador,pts_dea
 				estado_futuro = fim;
 			end
 			fim: begin
+				if (!pjogador && !pdealer)
+				estado_futuro = inicio;
+			else
 				estado_futuro = fim;
 			end
 		endcase
@@ -63,63 +68,58 @@ module pontuacao(clock,reset,carta,endereco,pjogador,pdealer,pts_jogador,pts_dea
 
 	always @(posedge clock,posedge reset) begin
 		if (reset) begin
-			temJQK_jog <= 0;
-			temJQK_dealer <= 0; 
 			temAS_jog <= 0;
-			temAS_dealer <= 0;
-			endereco <= 0;
-			pts_jogador <=0;
-			pts_dealer <=0;
-			cartaok <=0;
-			check_jog <= 0;
-			check_dealer <= 0;
+            temAS_dealer <= 0;
+            as_contabilizado_jog <= 0;
+            as_contabilizado_dealer <= 0;
+            endereco <= 0;
+            pts_jogador <= 0;
+            pts_dealer <= 0;
+            cartaok <= 0;
+            estado_atual <= inicio;
 		end
 		else begin
 			estado_atual <= estado_futuro;
 			case (estado_atual)
-				inicio: begin
-					cartaok <= 0;
-				end
-				verifica_carta: begin
-					if (pjogador) begin
-						if (carta == 1)
-							temAS_jog <= 1;
-						else if (carta >=11 && carta <=13)
-							temJQK_jog <= 1;
-					end
-					else if (pdealer) begin
-						if (carta == 1) 
-							temAS_dealer <= 1;
-						else if (carta >=11 && carta <=13)
-							temJQK_dealer <= 1;
-					end
-				end
-				soma: begin
-					if (pjogador)
-						pts_jogador <= pts_jogador + valor;
-					else if (pdealer)
-						pts_dealer <= pts_dealer + valor;
-				end
-				check: begin
-					if (pjogador) begin
-						if (temAS_jog && temJQK_jog && !check_jog)
-							pts_jogador <= pts_jogador + 10;
-							check_jog <=1;
-					end
-					else if (pts_dealer) begin
-						if (temAS_dealer && temJQK_dealer && !check_dealer)
-							pts_dealer <= pts_dealer + 10;
-							check_dealer <=1;
-					end
-				end
-				fim: begin
-					cartaok <= 1;
-					endereco <= endereco + 1;
-				end
-			endcase
-		end	
-	end
+                inicio: begin
+                    cartaok <= 0;
+                end
+
+                verifica_carta: begin
+                    if (pjogador && carta == 1) temAS_jog <= 1;
+                    if (pdealer && carta == 1) temAS_dealer <= 1;
+                end
+
+                soma: begin
+                    // Soma o valor base (Ás vale 1 aqui)
+                    if (pjogador) pts_jogador <= pts_jogador + valor;
+                    else if (pdealer) pts_dealer <= pts_dealer + valor;
+                end
+
+                check: begin
+                    // Lógica CORRETA do Ás: Se tem Ás e somar 10 não estoura 21, some 10.
+                    if (pjogador) begin
+                        if (temAS_jog && !as_contabilizado_jog && (pts_jogador + 10 <= 21)) begin
+                            pts_jogador <= pts_jogador + 10;
+                            as_contabilizado_jog <= 1; // Marca que já usamos o bônus do Ás
+                        end
+                    end
+                    else if (pdealer) begin // CORRIGIDO: pdealer em vez de pts_dealer
+                        if (temAS_dealer && !as_contabilizado_dealer && (pts_dealer + 10 <= 21)) begin
+                            pts_dealer <= pts_dealer + 10;
+                            as_contabilizado_dealer <= 1;
+                        end
+                    end
+                end
+
+                fim: begin
+                    cartaok <= 1;
+                    // Incrementa endereço APENAS UMA VEZ ao entrar no estado FIM
+                    if (estado_atual != fim) begin 
+                         endereco <= endereco + 1;
+                    end
+                end
+            endcase
+        end    
+    end
 endmodule
-
-
-
