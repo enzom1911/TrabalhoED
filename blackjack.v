@@ -3,7 +3,7 @@
 module blackjack(
     input embaralhar_ok, clock, reset, hit, stay, cartaok,
     input [5:0] pts_jogador, pts_dealer,
-    output reg pjogador, pdealer, player_hit, dealer_hit, player_stay, dealer_stay, win, lose, tie
+    output reg pjogador, pdealer, player_hit, dealer_hit, player_stay, dealer_stay, win, lose, tie, embaralhar_start
 );
 
     parameter inicio          = 5'b00000,
@@ -77,6 +77,7 @@ module blackjack(
                 proximo_estado = embaralhar;
             end
             embaralhar: begin
+                embaralhar_start = 1;
                 if (embaralhar_ok)
                     proximo_estado = carta1_jogador;
             end
