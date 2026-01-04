@@ -1,4 +1,8 @@
-module main (
+module main #(
+    // Parâmetros que o main aceita (com valores padrão de FPGA)
+    parameter SIM_DEBOUNCE_TIMER = 20'd500000,
+    parameter SIM_GAME_TIMER = 27'd100000000
+)(
     input CLOCK_50,        // Clock da placa DE2-115
     input [3:0] KEY,       // Botões (KEY[0]=Reset, KEY[1]=Hit, KEY[2]=Stay)
     output [17:0] LEDR,    // LEDs vermelhos (Status)
@@ -20,13 +24,19 @@ module main (
     wire [6:0] disp_jog_uni, disp_jog_dez, disp_deal_uni, disp_deal_dez;
 
     // 1. Tratamento dos Botões (Debounce)
+    // Instanciando Debouncers COM O PARÂMETRO
     // A lógica é invertida nas chaves da DE2-115 (0 = apertado), então invertemos na entrada (~KEY)
-    debouncer db_rst  (.clock(CLOCK_50), .reset(1'b0), .botao_in(~KEY[0]), .out(reset_clean));
-    debouncer db_hit  (.clock(CLOCK_50), .reset(reset_clean), .botao_in(~KEY[1]), .out(hit_clean));
-    debouncer db_stay (.clock(CLOCK_50), .reset(reset_clean), .botao_in(~KEY[2]), .out(stay_clean));
+    debouncer #(.limit_timer(SIM_DEBOUNCE_TIMER)) db_rst  
+        (.clock(CLOCK_50), .reset(1'b0), .botao_in(~KEY[0]), .out(reset_clean));
 
-    // 2. Máquina de Estados (Blackjack)
-    blackjack FSM (
+    debouncer #(.limit_timer(SIM_DEBOUNCE_TIMER)) db_hit  
+        (.clock(CLOCK_50), .reset(reset_clean), .botao_in(~KEY[1]), .out(hit_clean));
+        
+    debouncer #(.limit_timer(SIM_DEBOUNCE_TIMER)) db_stay 
+        (.clock(CLOCK_50), .reset(reset_clean), .botao_in(~KEY[2]), .out(stay_clean));
+
+    // 2. Máquina de Estados (Blackjack) COM O PARÂMETRO
+    blackjack #(.TIMER_LIMIT(SIM_GAME_TIMER)) FSM(
         .clock(CLOCK_50),
         .reset(reset_clean),
         .hit(hit_clean),

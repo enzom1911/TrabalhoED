@@ -1,6 +1,8 @@
 // módulo da máquina principal onde vamos definir os diferentes estados do jogo e a transição entre eles
 
-module blackjack(
+module blackjack #(// PARAMETER: Valor padrão para FPGA (2 segundos @ 50MHz = 100.000.000)
+    parameter TIMER_LIMIT = 27'd100000000
+)(
     input embaralhar_ok, clock, reset, hit, stay, cartaok,
     input [5:0] pts_jogador, pts_dealer,
     output reg pjogador, pdealer, player_hit, dealer_hit, player_stay, dealer_stay, win, lose, tie, embaralhar_start
@@ -36,7 +38,8 @@ module blackjack(
     reg ativar_timer;
     wire timer_done;
     
-    assign timer_done = (contador_tempo >= 100000000); // 2 segundos
+    // MUDANÇA: Usamos o parâmetro em vez de um número fixo
+    assign timer_done = (contador_tempo >= TIMER_LIMIT);
     
     always @(posedge clock, posedge reset) begin
         if (reset) begin

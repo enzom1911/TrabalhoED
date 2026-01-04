@@ -4,6 +4,7 @@ module debouncer(clock,reset,botao_in,out);
 	output reg out;
 	
 	// Clock da placa = 50MHz, Periodo de 20ns, se fizermos o sinal se manter por 10ms, precisaremos de 500.000 ciclos
+	// Na simulação, este valor será sobrescrito para algo pequeno (ex: 5)
 	parameter limit_timer = 20'd500000;
 	reg [19:0] contador;
 	reg sync_0,sync_1;
