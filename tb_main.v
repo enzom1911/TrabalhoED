@@ -39,7 +39,7 @@ module tb_main;
         // 1. Reset do sistema
         #100;
         KEY[0] = 0; // Pressiona Reset
-        #100; // Espera tempo suficiente para o debounce 
+        #300; // Espera tempo suficiente para o debounce 
         KEY[0] = 1; // Solta Reset
         #100;
         
