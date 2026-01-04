@@ -18,6 +18,8 @@ module pontuacao(clock,reset,carta,endereco,pjogador,pdealer,pts_jogador,pts_dea
 
 	reg [3:0] estado_atual, estado_futuro;
 	reg temJQK_jog, temJQK_dealer, temAS_jog,temAS_dealer;
+
+	reg as_contabilizado_jog, as_contabilizado_dealer; //Estava faltando essa linha e deu erro de compilação no ModelSim
 	reg [3:0] valor; // Valor verdadeiro da carta
 	reg check_jog, check_dealer;
 	
