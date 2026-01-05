@@ -13,8 +13,9 @@ module tb_main;
     // Instancia o Módulo Main
     // Sobrescrever os valores para simulação
     main #(
-        .SIM_DEBOUNCE_TIMER(20'd5),    // Debounce precisa de apenas 5 ciclos
-        .SIM_GAME_TIMER(27'd10)        // Timer do jogo espera apenas 10 ciclos
+        .SIM_DEBOUNCE_TIMER(20'd5), // Debounce precisa de apenas 5 ciclos
+        .SIM_GAME_TIMER(27'd10), // Timer do jogo espera apenas 10 ciclos
+        .SIM_SHUFFLE_LIMIT(4)        
     )uut(
         .CLOCK_50(CLOCK_50), 
         .KEY(KEY), 

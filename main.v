@@ -1,7 +1,8 @@
 module main #(
     // Parâmetros que o main aceita (com valores padrão de FPGA)
     parameter SIM_DEBOUNCE_TIMER = 20'd500000,
-    parameter SIM_GAME_TIMER = 27'd100000000
+    parameter SIM_GAME_TIMER = 27'd100000000,
+    parameter SIM_SHUFFLE_LIMIT  = 128
 )(
     input CLOCK_50,        // Clock da placa DE2-115
     input [3:0] KEY,       // Botões (KEY[0]=Reset, KEY[1]=Hit, KEY[2]=Stay)
@@ -60,7 +61,9 @@ module main #(
     );
 
     // 3. Memória (Baralho) 
-    baralho MEMORIA (
+    baralho #( 
+        .SHUFFLE_LIMIT(SIM_SHUFFLE_LIMIT)
+    )MEMORIA(
         .clock(CLOCK_50),
         .reset(reset_clean),
         .embaralhar_start(w_embaralhar_start),

@@ -1,4 +1,6 @@
-module baralho (
+module baralho #(
+    parameter SHUFFLE_LIMIT = 128 
+)(
     input clock,
     input reset,
     input embaralhar_start,      // Vem do blackjack (estado embaralhar)
@@ -13,7 +15,14 @@ module baralho (
     // Controle do Embaralhamento
     reg [7:0] swap_counter;      
     wire [5:0] random_num;       
-    reg [5:0] pos_A, pos_B;      
+    reg [5:0] pos_A, pos_B;
+    reg [1:0] state; 
+
+    initial begin
+        embaralhar_ok = 0;
+        state = 0;
+        swap_counter = 0;
+    end     
     
     // Instancia o gerador de aleatoriedade
     lfsr RNG (
@@ -22,7 +31,6 @@ module baralho (
         .rnd_out(random_num)
     );
 
-    reg [1:0] state;
     parameter IDLE = 0, SWAP_GET_ADDR = 1, SWAP_DO = 2, FINISH = 3;
 
     integer i;
@@ -54,7 +62,7 @@ module baralho (
                 IDLE: begin
                     embaralhar_ok <= 0;
                     if (embaralhar_start) begin
-                        swap_counter <= 128; // Define quantas trocas fará (quanto maior, mais misturado)
+                        swap_counter <= SHUFFLE_LIMIT; // Define quantas trocas fará (quanto maior, mais misturado)
                         state <= SWAP_GET_ADDR;
                     end
                 end
