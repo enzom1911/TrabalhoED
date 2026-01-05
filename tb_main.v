@@ -14,7 +14,7 @@ module tb_main;
     // Sobrescrever os valores para simulação
     main #(
         .SIM_DEBOUNCE_TIMER(20'd5), // Debounce precisa de apenas 5 ciclos
-        .SIM_GAME_TIMER(27'd10), // Timer do jogo espera apenas 10 ciclos
+        .SIM_GAME_TIMER(27'd100), // Timer do jogo espera apenas 10 ciclos
         .SIM_SHUFFLE_LIMIT(4)        
     )uut(
         .CLOCK_50(CLOCK_50), 
@@ -50,13 +50,13 @@ module tb_main;
         // 2. Simular um HIT (Pedir carta)
         #2000; // Espera as cartas iniciais serem distribuídas
         KEY[1] = 0; // Pressiona Hit
-        #100;
+        #300;
         KEY[1] = 1; // Solta Hit
         
         // 3. Simular um STAY (Parar)
         #2000;
         KEY[2] = 0; // Pressiona Stay
-        #100;
+        #300;
         KEY[2] = 1; // Solta Stay
 
         // Espera fim do jogo

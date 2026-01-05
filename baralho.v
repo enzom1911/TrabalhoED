@@ -17,11 +17,23 @@ module baralho #(
     wire [5:0] random_num;       
     reg [5:0] pos_A, pos_B;
     reg [1:0] state; 
+    integer i;
 
     initial begin
         embaralhar_ok = 0;
         state = 0;
         swap_counter = 0;
+
+        // Preenche a RAM com cartas válidas no tempo zero
+        // Isso impede que saia "X" na primeira leitura
+        for (i = 0; i < 52; i = i + 1) begin
+            if ((i % 13) == 0) 
+                ram[i] = 4'd1;         // Ás
+            else if ((i % 13) < 10)
+                ram[i] = (i % 13) + 1; // 2 a 10
+            else
+                ram[i] = 4'd11;        // J, Q, K
+        end
     end     
     
     // Instancia o gerador de aleatoriedade
@@ -33,7 +45,6 @@ module baralho #(
 
     parameter IDLE = 0, SWAP_GET_ADDR = 1, SWAP_DO = 2, FINISH = 3;
 
-    integer i;
     reg [3:0] base_val; // Variável auxiliar para calcular o valor inicial
 
     always @(posedge clock or posedge reset) begin

@@ -10,6 +10,15 @@ module debouncer(clock,reset,botao_in,out);
 	reg sync_0,sync_1;
 	reg estado_estavel;
 	reg estado_antigo;
+
+	initial begin
+        contador = 0;
+        sync_0 = 0;
+        sync_1 = 0;
+        estado_estavel = 0;
+        estado_antigo = 0;
+        out = 0;
+    end
 	
 	always @(posedge clock) begin
 		sync_0 <= botao_in;
